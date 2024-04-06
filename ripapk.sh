@@ -5,7 +5,7 @@ listallpackages=$(adb shell pm list packages)
 listuserpackages=$(adb shell pm list packages -3)
 makedir=0
 
-# init
+# init (Checks if the user uses the prefix -m)
 if [[ "$1" == "-m"  ]]; then
 	makedir=1
 fi
