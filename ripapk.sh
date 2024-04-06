@@ -64,7 +64,12 @@ printf "\n$arraysize Rip All\n"
 
 # Options for pulling the apk (This is messy, maybe I'll rework it if I get a star)
 while read; do
-	if [[ $REPLY -lt ${#choicearray[@]} ]]; then
+	if [[ $REPLY -lt ${#choicearray[@]} ]] && [[ $makedir -eq 1 ]]; then
+		mkdir $identifier
+		cd $identifier
+		adb pull ${choicearray[$REPLY]}
+		break
+	elif [[ $REPLY -lt ${#choicearray[@]} ]]; then
 		adb pull ${choicearray[$REPLY]}
 		break
 	elif [[ $REPLY = "$arraysize" ]] && [[ $makedir -eq 1 ]]; then
