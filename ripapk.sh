@@ -3,6 +3,12 @@
 # Commands for listing packages
 listallpackages=$(adb shell pm list packages)
 listuserpackages=$(adb shell pm list packages -3)
+makedir=0
+
+# init
+if [[ "$1" == "-m"  ]]; then
+	makedir=1
+fi
 
 # Describes the options for listing packages
 echo "Please choose to list all packages [1] or only user installed packages [2]"
@@ -26,6 +32,7 @@ while read; do
 	if adb shell pm path $REPLY; then
 		outputapkpath=$(adb shell pm path $REPLY)
 		outputapkpath=${outputapkpath//"package:"/}
+		identifier=$REPLY
 		break
 	else
 		echo "Invalid Input"
@@ -33,7 +40,7 @@ while read; do
 done
 
 choicearray=($outputapkpath)
-echo ${choicearray[*]}
+# echo ${choicearray[*]}
 
 # Prints out the APKs to rip
 
@@ -60,7 +67,9 @@ while read; do
 	if [[ $REPLY -lt ${#choicearray[@]} ]]; then
 		adb pull ${choicearray[$REPLY]}
 		break
-	elif [[ $REPLY = "$arraysize" ]]; then
+	elif [[ $REPLY = "$arraysize" ]] && [[ $makedir -eq 1 ]]; then
+		mkdir $identifier
+		cd $identifier
 		while [ $whattopull -lt $arraysize ]
 		# This is a loop for pulling all of the apks in a directory
 		do
@@ -68,7 +77,15 @@ while read; do
 			whattopull=$((whattopull+1))
 		done
 		break
+        elif [ $REPLY = "$arraysize" ]; then
+                while [ $whattopull -lt $arraysize ]
+                # This is a loop for pulling all of the apks in a directory
+                do
+                        adb pull ${choicearray[$whattopull]}
+                        whattopull=$((whattopull+1))
+                done
+                break
 	else
 		echo "invalid option"
-fi
+	fi
 done
